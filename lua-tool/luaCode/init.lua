@@ -8,12 +8,26 @@ print('heap: ',node.heap())
 dofile("configWifi.lua")
 
 
---services
-dofile("services.lua")
-print("Services UP")
+-- wait for an IP
+cnt = 20
+tmr.alarm(0,1000,1,function()
+  if wifi.sta.getip()==nil then
+    cnt = cnt-1
+    print "Not IP yet. Retry..."
+    if cnt<=0 then
+      -- Did not get an IP in time, so quitting
+      tmr.stop(0)
+      print "Not connected to wifi."
+    end
+  else
 
+    -- Connected to the wifi
+    tmr.stop(0)
+    --services
+    dofile("services.lua")
+    print("Services UP")
 
-
-
-print("Executing main")
-dofile("main.lua")
+    print("Executing main")
+    dofile("main.lua")
+  end
+end)
